@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-table.css">
+<script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="__RES__/fota/js/flyimage.js"></script>
+<body>
+<form class="form-horizontal" name="otapackageform" id="otapackageform" method="post" role="form"
+      action="{:url('/fotaapi/otapackage')}"
+      enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">{if condition="$item['otapackageId'] gt 0"}修改安装包{else/}添加安装包{/if}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="col-sm-1 control-label">版本号</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="version" id="version"
+                       value="{$item.version}"
+                       placeholder="请输入名称">
+            </div>
+        </div>
+        {if condition="$item['otapackageId'] gt 0"}
+        <input type="hidden" name="otapackageId" id="otapackageId" value="{$item.otapackageId}">
+        {/if}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="onCancel()">取消</button>
+        {if condition="$item['otapackageId'] gt 0"}
+        <button type="button" class="btn btn-primary" onclick="postform()">修改</button>
+        {else/}
+        <button type="reset" class="btn btn-default">重置</button>
+        <button type="button" class="btn btn-primary" onclick="postform()">提交</button>
+        {/if}
+    </div>
+</form>
+</body>
+</html>
+
+<script type="text/javascript">
+    var otapackageurl = "{:url('/fotaapi/otapackage')}";
+
+    //POST提交数据
+    function postform() {
+        if ($('#otapackageName').val() === "") {
+            $('#otapackageName').focus();
+            return
+        }
+
+        if ($('#otapackage').val() === "") {
+            $('#otapackage').focus();
+            return
+        }
+
+        $.ajax({
+            type: "{$item.otapackageId}" <= 0?"POST":"PUT",
+            url: otapackageurl,
+            data: $('#otapackageform').serialize(),
+            error: function (request) {
+                alert("error code:" + request.readyState);
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    window.history.back();
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        });
+    }
+
+    function onCancel() {
+        window.location.href = "{:url('/fota/otapackage')}";
+    }
+</script>

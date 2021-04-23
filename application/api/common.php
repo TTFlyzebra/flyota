@@ -3,7 +3,6 @@
 use think\Db;
 use think\Session;
 
-
 function getCellFiled()
 {
     return ['a.cellId', 'a.description', 'a.themeId', 'a.celltypeId', 'c.themeName', 'a.resId', 'a.width', 'a.height',

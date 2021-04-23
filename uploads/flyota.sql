@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.7
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- 主机： localhost
--- 生成日期： 2021-04-23 01:19:34
+-- 生成日期： 2021-04-23 09:56:20
 -- 服务器版本： 5.5.42
 -- PHP 版本： 7.4.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 数据库： `flyui`
+-- 数据库： `flyota`
 --
 
 -- --------------------------------------------------------
@@ -546,6 +545,27 @@ INSERT INTO `fly_news` (`newsId`, `newsTitle`, `newsSort`, `imageurl1`, `imageur
 (12, '测试测试测试测试测试测试测试测试测试测试测wwww', 0, 'http://192.168.8.140/flyota/uploads/8e/466e3e87d66d8a0e5b9c4c9a968aa9.jpg', '', '测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试1测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试1测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试1测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试1测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试1', 0, NULL, '2019-02-22 07:17:34', 0, '192.168.1.119'),
 (13, '1', 0, 'http://192.168.8.140/flyota/uploads/8c/e959e3095e392fd7f8c63177cfac0a.jpg', '', '1', 0, NULL, '2019-03-11 06:11:21', 6, '192.168.1.119'),
 (14, '111', 0, 'http://192.168.8.140/flyota/uploads/7e/b83361c57dc762493d937381938176.jpg', 'http://192.168.8.140/flyota/uploads/fb/373749569112755e4149c01d7f7346.jpg', '1', 0, NULL, '2019-03-11 06:13:35', 6, '192.168.1.119');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `fly_otapackage`
+--
+
+CREATE TABLE `fly_otapackage` (
+  `otapackageId` int(11) NOT NULL,
+  `version` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `downurl` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `filesize` bigint(20) NOT NULL,
+  `md5sum` varchar(64) CHARACTER SET utf8 NOT NULL,
+  `otatype` int(11) NOT NULL,
+  `oldversion` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+  `remark` text CHARACTER SET utf8,
+  `createtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `userid` int(11) NOT NULL,
+  `ip` varchar(16) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1478,7 +1498,10 @@ INSERT INTO `fly_user_log` (`id`, `userid`, `event`, `tableName`, `data`, `creat
 (81, 6, 'login', '', '', '2021-04-01 08:40:09', '127.0.0.1'),
 (82, 6, 'login', '', '', '2021-04-01 08:41:12', '127.0.0.1'),
 (83, 6, 'login', '', '', '2021-04-21 01:42:09', '127.0.0.1'),
-(84, 6, 'login', '', '', '2021-04-22 08:54:43', '127.0.0.1');
+(84, 6, 'login', '', '', '2021-04-22 08:54:43', '127.0.0.1'),
+(85, 6, 'login', '', '', '2021-04-23 01:26:20', '127.0.0.1'),
+(86, 6, 'login', '', '', '2021-04-23 02:05:12', '192.168.8.140'),
+(87, 6, 'login', '', '', '2021-04-23 09:26:35', '192.168.8.140');
 
 -- --------------------------------------------------------
 
@@ -1579,6 +1602,12 @@ ALTER TABLE `fly_history`
 --
 ALTER TABLE `fly_news`
   ADD PRIMARY KEY (`newsId`);
+
+--
+-- 表的索引 `fly_otapackage`
+--
+ALTER TABLE `fly_otapackage`
+  ADD PRIMARY KEY (`otapackageId`);
 
 --
 -- 表的索引 `fly_page`
@@ -1724,6 +1753,12 @@ ALTER TABLE `fly_news`
   MODIFY `newsId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
+-- 使用表AUTO_INCREMENT `fly_otapackage`
+--
+ALTER TABLE `fly_otapackage`
+  MODIFY `otapackageId` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- 使用表AUTO_INCREMENT `fly_page`
 --
 ALTER TABLE `fly_page`
@@ -1799,7 +1834,7 @@ ALTER TABLE `fly_user`
 -- 使用表AUTO_INCREMENT `fly_user_log`
 --
 ALTER TABLE `fly_user_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自动递增', AUTO_INCREMENT=85;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自动递增', AUTO_INCREMENT=88;
 
 --
 -- 使用表AUTO_INCREMENT `fly_user_role`
