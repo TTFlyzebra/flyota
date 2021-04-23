@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-table.css">
+<script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="__RES__/common/js/jquery.serializejson.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="__RES__/flyui/js/flyimage.js"></script>
+<script type="text/javascript" src="__RES__/flyui/js/flyjsonedit.js"></script>
+<script type="text/javascript" src="__RES__/flyui/js/flyscreen.js"></script>
+<body>
+<div class="modal-header">
+    <h4 class="modal-title" id="myModalLabel">{if condition="$id gt 0"}修改组件{else/}添加组件{/if}</h4>
+</div>
+<form class="form-horizontal" id="flyform" method="post" action="{:url('/flyuiapi/test')}" enctype="multipart/form-data">
+    <ul id="cellTab" class="nav nav-tabs">
+        <li style="float:right;">
+            <button type="button" onclick="addNewCell();" style="width:36px;line-height: 30px;float: right">╋</button>
+        </li>
+    </ul>
+    <div id="cellTabContent" class="tab-content"></div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="onCancel()">取消</button>
+        <button type="reset" class="btn btn-default">重置</button>
+        <button type="button" class="btn btn-default" onclick="saveForm('{$id}')">保存</button>
+        <button type="button" class="btn btn-primary" onclick="postForm('{$id}')">提交</button>
+        <!--<button type="submit" class="btn btn-primary">测试</button>-->
+    </div>
+</form>
+<!-- loading -->
+<div id="loadingDialog" style="z-index: 9999;position:absolute;left:0;right:0;top:80%;bottom:0;width:180px;height:30px;margin: auto;
+    border: solid 1px #666;background-color: #FFFFFF;box-shadow: 0 0 3px #666;display: none;
+    font-size: 20px;text-align: center;vertical-align:middle;">
+    正在提交请求......
+</div>
+<!--事件编辑-->
+<div id="recvDialog" class="FlyJsonEdit">
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 180px;border:solid;border-width:1px;border-color:#AAAAAA;">
+        <label style="padding:9px;width: 100%;height:30px;">常用设置</label>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            事件ID：&ensp;&ensp;<input id="recvId" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            显示控件：<input id="visibleContent" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            隐藏控件：<input id="disVisibleContent" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+    </div>
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 160px;border:solid;border-width:1px;border-color:#AAAAAA;">
+        <label style="padding:9px;width: 100%;height:30px;">动画设置</label>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            事件ID：&ensp;&ensp;<input id="animId" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            播放动画：<input id="startAnim" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            动画类型：<input id="animType" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+    </div>
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 50px;border:solid;border-width:1px;border-color:#AAAAAA;">
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            主健ID：&ensp;&ensp;<input id="keyId" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+    </div>
+</div>
+<!--事件编辑-->
+<div id="sendDialog" class="FlyJsonEdit">
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 130px;border:solid;border-width:1px;border-color:#AAAAAA;">
+        <label style="padding:9px;width: 100%;height:30px;">事件设置</label>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            事件ID：&ensp;&ensp;<input id="eventId" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            事件数据：<input id="eventContent" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+    </div>
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 206px;border:solid;border-width:1px;border-color:#AAAAAA;">
+        <label style="padding:9px;width: 100%;height:30px;">启动应用</label>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            应用包名：<input id="packName" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            应用类名：<input id="className" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            Intent：&ensp;&ensp;&ensp;<input id="intent" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(100% - 8px);float: left">
+            自&ensp;定&ensp;义：<input id="flyAction" style="width:calc(100% - 80px);height:30px;" type="text">
+        </div>
+    </div>
+</div>
+<!--语言编辑-->
+<div id="languageDialog" class="FlyJsonEdit">
+    <div style="margin:4px;padding:4px;width:calc(100% - 8px);;height: 358px;border:solid;border-width:1px;border-color:#AAAAAA;;overflow-y:scroll;">
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">中文|zh-rCN：</label>
+            <input id="zh_rCN" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">繁体|zh-rTW：</label>
+            <input id="zh_rTW" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">英语|en：</label>
+            <input id="en" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">俄语|ru：</label>
+            <input id="ru" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">希腊语|el：</label>
+            <input id="el" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">波兰语|pl：</label>
+            <input id="pl" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">葡萄牙|pt：</label>
+            <input id="pt" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">土耳其语|tr：</label>
+            <input id="tr" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">阿拉伯文|ar：</label>
+            <input id="ar" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">波斯语|fa：</label>
+            <input id="fa" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">罗马尼亚|ro：</label>
+            <input id="ro" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">法语|fr：</label>
+            <input id="fr" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">匈牙利语|hu：</label>
+            <input id="hu" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">意大利语|it：</label>
+            <input id="it" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">泰语|th：</label>
+            <input id="th" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">德语|de：</label>
+            <input id="de" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">乌克兰语|uk：</label>
+            <input id="uk" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+        <div style="margin:4px;height:30px;width:calc(50% - 8px);float: left">
+            <label style="width: 94px;">西班牙|es：</label>
+            <input id="es" style="width:calc(100% - 100px);height:30px;" type="text">
+        </div>
+    </div>
+</div>
+<!--组件图层编辑 -->
+<div id="cellPageDialog" class="FlyJsonEdit">
+    <div class="flycontent">
+        <div class="flyscreen"></div>
+        <div class="flymenu"></div>
+        <div class="flycontrl">
+            <label>显示删除</label><input class="showdelete" type="checkbox" checked="checked">
+            <label>位置微调</label><input class="showadjust" type="checkbox" checked="checked">
+            <button type="button" class="screenrefresh" class="btn btn-lg">重新加载</button>
+            <button type="button" class="screensave" class="btn btn-lg">保存设置</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    cellnum = 0;
+    imagesNum = [];
+    textsNum = [];
+    pagesNum = [];
+
+    function isTextEmpty(obj) {
+        return typeof obj == "undefined" || obj == null || obj === "";
+    }
+
+    function verify(value) {
+        return (value === undefined || value == null) ? "" : value;
+    }
+
+    function isSelect(v1, v2) {
+        return v1 == v2 ? ' selected="selected"' : '';
+    }
+
+    function inputDelButton(num) {
+        return num > 0 ? '<button  id="cellDel_' + num + '" type="button" style="width:36px;line-height: 30px;float: right">╳</button>' : '';
+    }
+
+    function inputCellId(cell, num) {
+        if (num > 0) {
+            if (undefined === cell.subcellId || cell.subcellId <= 0) {
+                return "";
+            } else {
+                return '<input type="hidden" name="' + num + '_cellId" value="' + cell.cellId + '">' +
+                    '<input type="hidden" name="' + num + '_subcellId" value="' + cell.subcellId + '"> ';
+            }
+        } else {
+            if (undefined === cell.cellId || cell.cellId <= 0) {
+                return "";
+            } else {
+                return '<input type="hidden" name="' + num + '_cellId" value="' + cell.cellId + '"> ';
+            }
+        }
+    }
+
+    function addCell(num, cell) {
+        if (cell === undefined) {
+            cell = {
+                description: "", themeId: "", celltypeId: "", width: "", height: "", backColor: "",
+                filterColor: "", recv: null, send: null, remark: "", texts: null, images: null, newcreate: true
+            };
+        }
+        var display = num > 0 ? "display:none" : "";
+        var cellTab = $('<li><a href="#cell' + num + '" data-toggle="tab">组件</a></li>');
+        var cellTabContent = $(
+            '<div class="tab-pane fade in" id="cell' + num + '">' +
+            '    <div class="modal-body">' + inputDelButton(num) +
+            '        <div class="form-group">' +
+            '            <input type="hidden" name="prefix[]" value="' + num + '_">' + inputCellId(cell, num) +
+            '            <div style="margin-right:50px;width: 45%;height: 100%;float: left;">' +
+            '               <div class="col-sm-12" style="margin:0px 0px 0px 50px;padding:2px 2px 2px 2px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                   <label style="padding:9px 9px 9px 14px;width: 100%" >基本属性</label>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       组件描述:' +
+            '                       <input name="' + num + '_description" style="width:95px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.description) + '" placeholder="">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       关联模板:' +
+            '                       <select name="' + num + '_themeId" style="height:30px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                          {volist name="themes" id="theme" key="k"}' +
+            '                           <option value="{$theme.themeId}"' + isSelect("{$theme.themeId}", cell.themeId) + '>{$theme.themeName}</option>' +
+            '                          {/volist}' +
+            '                       </select>' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '                       组件类型:' +
+            '                       <select id="' + num + '_celltype" name="' + num + '_celltypeId" style="height:30px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                          {volist name="celltypes" id="celltype" key="k"}' +
+            '                           <option value="{$celltype.celltypeId}" ' + isSelect("{$celltype.celltypeId}", cell.celltypeId) + '>{$celltype.celltypeName}</option>' +
+            '                          {/volist}' +
+            '                       </select>' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       RESID:' +
+            '                       <input name="' + num + '_resId" style="width:60px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.resId) + '" placeholder="">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       组件宽度:' +
+            '                       <input name="' + num + '_width" id="' + num + '_width" style="width:95px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.width) + '" placeholder="">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       组件高度:' +
+            '                       <input name="' + num + '_height" id="' + num + '_height" style="width:95px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.height) + '" placeholder="">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       背景颜色:' +
+            '                       <input name="' + num + '_backColor" style="width:95px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.backColor) + '" placeholder="#FFFFFFFF">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;height:30px;float:left;' + display + '">' +
+            '                       过滤颜色:' +
+            '                       <input name="' + num + '_filterColor" style="width:95px;height:30px;" type="text" ' +
+            '                              value="' + verify(cell.filterColor) + '" placeholder="#FFFFFFFF">' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '                       接收数据:' +
+            '                       <input id="' + num + '_recv" name="' + num + '_recv" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '                              value="' + verify(cell.recv) + '" placeholder=""' +
+            '                              onclick="openrecvDialog(' + 0 + ',' + num + ')" readonly>' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;' + display + '">' +
+            '                       点击事件:' +
+            '                       <input id="' + num + '_send" name="' + num + '_send" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '                              value="' + verify(cell.send) + '" placeholder=""' +
+            '                              onclick="opensendDialog(' + 0 + ',' + num + ')" readonly>' +
+            '                   </div>' +
+            '                   <div style="margin:2px 2px 2px 2px;width:100%;float:left;">' +
+            '                       <span style="padding-right: 4px;float:left;">备注扩展:</span>' +
+            '                       <textarea name="' + num + '_remark" style="width:calc(100% - 84px);" ' +
+            '                              placeholder="">' + verify(cell.remark) + '</textarea>' +
+            '                   </div>' +
+            '               </div>' +
+            '               <div class="col-sm-12" style="height:392px;margin:10px 0px 0px 50px;padding:2px 2px 2px 2px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                   <ul id="otherTab" class="nav nav-tabs">' +
+            '                       <li class="active"><a href="#other_1" data-toggle="tab">控件说明</a></li>' +
+            '                       <li><a href="#other_2" data-toggle="tab">控件预览</a></li>' +
+            '                   </ul>' +
+            '                   <div id ="otherContent' + num + '" class="tab-content">' +
+            '                       <div class="tab-pane fade in active" style="margin: 20px;" id="other_1">' +
+            '                       </div>' +
+            '                       <div class="tab-pane fade in" style="text-align:center;line-height:300px;margin: 20px;" id="other_2">' +
+            '                           功能开发中......' +
+            '                       </div>' +
+            '                   </div>' +
+            '               </div>' +
+            '            </div>' +
+            '            <div style="width: 45%;height: 100%;float: left;">' +
+            '               <div class="col-sm-12" style="margin:0px 0px 0px 50px;padding:2px 2px 2px 2px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                   <ul id="textTab' + num + '" class="nav nav-tabs">' +
+            '                       <li><a style="font-weight:bold;color: #000000">文本</a></li>' +
+            '                       <li style="float:right"><button type="button" onclick="addNewText(' + num + ');" style="width:36px;line-height: 30px;float: right">╋</button></li>' +
+            '                   </ul>' +
+            '                   <div id ="textTabContent' + num + '" class="tab-content">' +
+            '                   </div>' +
+            '               </div>' +
+            '               <div class="col-sm-12" style="margin:10px 0px 0px 50px;padding:2px 2px 2px 2px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                   <ul id="imageTab' + num + '" class="nav nav-tabs">' +
+            '                       <li><a style="font-weight:bold;color: #000000">图像</a></li>' +
+            '                       <li style="float:right"><button type="button" onclick="addNewImage(' + num + ');" style="width:36px;line-height: 30px;float: right">╋</button></li>' +
+            '                   </ul>' +
+            '                   <div id ="imageTabContent' + num + '" class="tab-content">' +
+            '                   </div>' +
+            '               </div>' +
+            '               <div class="col-sm-12" style="margin:10px 0px 0px 50px;padding:2px 2px 2px 2px;border:solid;border-width:1px;border-color:#000000;">' +
+            '                   <ul id="pageTab' + num + '" class="nav nav-tabs">' +
+            '                       <li><a style="font-weight:bold;color: #000000">图层</a></li>' +
+            '                       <li style="float:right"><button type="button" onclick="addNewPage(' + num + ',' + cell.subcellId + ');" style="width:36px;line-height: 30px;float: right">╋</button></li>' +
+            '                   </ul>' +
+            '                   <div id ="pageTabContent' + num + '" class="tab-content">' +
+            '                   </div>' +
+            '               </div>' +
+            '            </div>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>');
+        $('#cellTab').get(0).append(cellTab.get(0));
+        $('#cellTabContent').get(0).append(cellTabContent.get(0));
+
+        if (cell.newcreate || num === 0) {
+            $('#cellTab a:last').click();
+        }
+
+        textsNum[num] = (cell.texts === null || cell.texts === undefined) ? 0 : cell.texts.length;
+        imagesNum[num] = (cell.images === null || cell.images === undefined) ? 0 : cell.images.length;
+        pagesNum[num] = (cell.pages === null || cell.pages === undefined) ? 0 : cell.pages.length;
+        if (!cell.newcreate) {
+            for (var i = 0; i < textsNum[num]; i++) {
+                addText(num, i, cell.texts[i]);
+            }
+            for (var j = 0; j < imagesNum[num]; j++) {
+                addImage(num, j, cell.images[j]);
+            }
+
+            for (var k = 0; k < pagesNum[num]; k++) {
+                addPage(num, k, cell.pages[k]);
+            }
+        }
+        if (num === 0) {
+            refreshCelltypeRemark(cell.celltypeId);
+            $("#0_celltype").change(function () {
+                var id = $("#0_celltype").val();
+                refreshCelltypeRemark(id);
+            });
+        }
+        $('#cellDel_' + num).on("click", function (event) {
+            $('#cellTab').get(0).removeChild(cellTab.get(0));
+            $('#cellTab a:last').click();
+            $('#cellTabContent').get(0).removeChild(cellTabContent.get(0));
+        });
+
+        var str1 = isTextEmpty(cell.recv) ? cell.recv : JSON.stringify(cell.recv);
+        $('#' + num + "_recv").val(str1 == "null" ? "" : str1);
+        var str2 = isTextEmpty(cell.send) ? cell.send : JSON.stringify(cell.send);
+        $('#' + num + "_send").val(str2 == "null" ? "" : str2);
+    }
+
+    function refreshCelltypeRemark(id) {
+        $.ajax({
+            type: "GET",
+            url: "{:url('/flyuiapi/celltype')}?id=" + id,
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    $("#other_1").get(0).innerHTML = obj.data.remark;
+                }
+            }
+        });
+    }
+
+    function addText(num, subnum, text) {
+        if (text === undefined) {
+            text = {
+                textSize: "24", textLines: "1", textColor: "#FFFFFF", textFilter: "", text: null, left: "",
+                top: "", right: "", bottom: "", recv: null, send: null, gravitiy: 0, newcreate: true
+            };
+        }
+        num = verify(num);
+        var textTab = $('<li><a href="#text_' + num + '_' + subnum + '" data-toggle="tab">' + subnum + '</a></li>');
+        var textTabContent = $(
+            '<div class="tab-pane fade in" id="text_' + num + '_' + subnum + '">' +
+            '   <button  id="textDel_' + num + '_' + subnum + '" type="button" style="width:36px;line-height: 30px;float: right">╳</button>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(100% - 40px);height:30px;float:left;">' +
+            '       文本内容:' +
+            '       <input id="' + num + '_' + subnum + '_text" name="' + num + '_text[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(text.text) + '" placeholder=""' +
+            '              onclick="openLanguageDialog(' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       字体大小:' +
+            '       <input name="' + num + '_textSize[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(text.textSize) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       文本行数:' +
+            '       <input name="' + num + '_textLines[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(text.textLines) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       文本颜色:' +
+            '       <input name="' + num + '_textColor[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(text.textColor) + '" placeholder="#FFFFFFFF">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       过滤颜色:' +
+            '       <input name="' + num + '_textFilter[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(text.textFilter) + '" placeholder="#FF0000FF">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       文本位置:&nbsp&nbsp&nbsp&nbsp;左' +
+            '       <input name="' + num + '_textLeft[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(text.left) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       上' +
+            '       <input name="' + num + '_textTop[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(text.top) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       右' +
+            '       <input name="' + num + '_textRight[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(text.right) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       下' +
+            '       <input name="' + num + '_textBottom[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(text.bottom) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       对齐方式:' +
+            '       <select name="' + num + '_textGravity[]" style="height:30px;border:solid;border-width:1px;border-color:#000000;">' +
+            '           <option value="0"' + isSelect(0, verify(text.gravity)) + '>居中对齐</option>' +
+            '           <option value="1"' + isSelect(1, verify(text.gravity)) + '>左边对齐</option>' +
+            '           <option value="2"' + isSelect(2, verify(text.gravity)) + '>右边对齐</option>' +
+            '           <option value="3"' + isSelect(3, verify(text.gravity)) + '>左中对齐</option>' +
+            '           <option value="4"' + isSelect(4, verify(text.gravity)) + '>右中对齐</option>' +
+            '       </select>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       接收数据:' +
+            '       <input id="' + num + '_' + subnum + '_textRecv" name="' + num + '_textRecv[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(text.recv) + '" placeholder=""' +
+            '              onclick="openrecvDialog(' + 1 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       点击事件:' +
+            '       <input id="' + num + '_' + subnum + '_textSend" name="' + num + '_textSend[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(text.send) + '" placeholder=""' +
+            '              onclick="opensendDialog(' + 1 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '</div>');
+        $('#textTab' + num).get(0).append(textTab.get(0));
+        $('#textTabContent' + num).get(0).append(textTabContent.get(0));
+        if (text.newcreate || subnum === 0) {
+            $('#textTab' + num + ' a:last').click();
+        }
+
+        $('#textDel_' + num + '_' + subnum).on("click", function (event) {
+            $('#textTab' + num).get(0).removeChild(textTab.get(0));
+            $('#textTab' + num + ' a:last').click();
+            $('#textTabContent' + num).get(0).removeChild(textTabContent.get(0));
+        });
+
+        var str1 = isTextEmpty(text.text) ? text.text : JSON.stringify(text.text);
+        $('#' + num + '_' + subnum + '_text').val(str1 == "null" ? "" : str1);
+        var str2 = isTextEmpty(text.recv) ? text.recv : JSON.stringify(text.recv);
+        $('#' + num + '_' + subnum + '_textRecv').val(str2 == "null" ? "" : str2);
+        var str3 = isTextEmpty(text.send) ? text.send : JSON.stringify(text.send);
+        $('#' + num + '_' + subnum + '_textSend').val(str3 == "null" ? "" : str3);
+    }
+
+    function addImage(num, subnum, image) {
+        if (image === undefined) {
+            image = {
+                url: "", width: "", height: "", filterColor: "", left: "", top: "", right: "", bottom: "",
+                recv: null, send: null, shapeType: 0, scaleType: 0, newcreate: true
+            };
+        }
+        num = verify(num);
+        var imageTab = $('<li><a href="#image_' + num + '_' + subnum + '" data-toggle="tab">' + subnum + '</a></li>');
+        var imageTabContent = $(
+            '<div class="tab-pane fade in" id="image_' + num + '_' + subnum + '">' +
+            '   <div>' +
+            '       <input class="FlyImageInput" type="file" accept="image/*" name="imagefile" ' +
+            '       num="' + num + '" subnum="' + subnum + '"imageUrl="' + verify(image.url) + '" ' +
+            '       imageWidth="' + verify(image.width) + '" imageHeight="' + verify(image.height) + '">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       过滤颜色:' +
+            '       <input name="' + num + '_imageFilter[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(image.filterColor) + '" placeholder="#FF0000FF">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       图片形状:' +
+            '       <select name="' + num + '_shapeType[]" style="height:30px;border:solid;border-width:1px;border-color:#000000;">' +
+            '           <option value="0"' + isSelect(0, verify(image.shapeType)) + '>正方形</option>' +
+            '           <option value="1"' + isSelect(1, verify(image.shapeType)) + '>圆形</option>' +
+            '           <option value="2"' + isSelect(2, verify(image.shapeType)) + '>六边形</option>' +
+            '       </select>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       图片位置:&nbsp&nbsp&nbsp&nbsp;左' +
+            '       <input name="' + num + '_imageLeft[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(image.left) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       上' +
+            '       <input name="' + num + '_imageTop[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(image.top) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       右' +
+            '       <input name="' + num + '_imageRight[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(image.right) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       下' +
+            '       <input name="' + num + '_imageBottom[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(image.bottom) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       缩放模式:' +
+            '       <select name="' + num + '_scaleType[]" style="height:30px;border:solid;border-width:1px;border-color:#000000;">' +
+            '           <option value="0"' + isSelect(0, verify(image.scaleType)) + '>FitXY</option>' +
+            '           <option value="1"' + isSelect(1, verify(image.scaleType)) + '>FitCenter</option>' +
+            '           <option value="2"' + isSelect(2, verify(image.scaleType)) + '>Center</option>' +
+            '           <option value="3"' + isSelect(3, verify(image.scaleType)) + '>CenrerCrop</option>' +
+            '           <option value="4"' + isSelect(4, verify(image.scaleType)) + '>CenrerInside</option>' +
+            '       </select>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       接收数据:' +
+            '       <input id="' + num + '_' + subnum + '_imageRecv" name="' + num + '_imageRecv[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(image.recv) + '" placeholder=""' +
+            '              onclick="openrecvDialog(' + 2 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       点击事件:' +
+            '       <input id="' + num + '_' + subnum + '_imageSend" name="' + num + '_imageSend[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(image.send) + '" placeholder=""' +
+            '              onclick="opensendDialog(' + 2 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '</div>');
+        $('#imageTab' + num).get(0).append(imageTab.get(0));
+        $('#imageTabContent' + num).get(0).append(imageTabContent.get(0));
+        if (image.newcreate || subnum === 0) {
+            $('#imageTab' + num + ' a:last').click();
+        }
+        refreshFlyImage();
+        $('#imageDel_' + num + '_' + subnum).on("click", function (event) {
+            $('#imageTab' + num).get(0).removeChild(imageTab.get(0));
+            $('#imageTab' + num + ' a:last').click();
+            $('#imageTabContent' + num).get(0).removeChild(imageTabContent.get(0));
+        });
+        var str1 = isTextEmpty(image.recv) ? image.recv : JSON.stringify(image.recv);
+        $('#' + num + '_' + subnum + '_imageRecv').val(str1 == "null" ? "" : str1);
+        var str2 = isTextEmpty(image.send) ? image.send : JSON.stringify(image.send);
+        $('#' + num + '_' + subnum + '_imageSend').val(str2 == "null" ? "" : str2);
+    }
+
+    function addPage(num, subnum, page) {
+        if (page === undefined) {
+            page = {
+                pageId: "", cellId: "", backColor: "", width: "", height: "", recv: null, send: null, newcreate: true
+            }
+        }
+        num = verify(num);
+        var pageTab = $('<li><a href="#page_' + num + '_' + subnum + '" data-toggle="tab">' + subnum + '</a></li>');
+        var pageTabContent = $(
+            '<div class="tab-pane fade in" id="page_' + num + '_' + subnum + '">' +
+            '   <input type="hidden" name="' + num + '_pagePageId[]" value="' + page.pageId + '">' +
+            '   <button  id="pageDel_' + num + '_' + subnum + '" type="button" style="width:36px;line-height: 30px;float: right">╳</button>' +
+            '   <button  onclick="openPageEditDialog('+page.pageId+ ',' + num + ',' + subnum + ')" type="button" style="width:36px;line-height: 30px;float: right">E</button>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       图层颜色:' +
+            '       <input name="' + num + '_pageBackColor[]" style="width:95px;height:30px;" type="text" ' +
+            '              value="' + verify(page.backColor) + '" placeholder="#FF0000FF">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       图层宽度' +
+            '       <input id="'+num+'_'+subnum+'_pageWidth" name="' + num + '_pageWidth[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(page.width) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;height:30px;float:left;">' +
+            '       图层高度' +
+            '       <input id="'+num+'_'+subnum+'_pageHeight"name="' + num + '_pageHeight[]" style="width:80px;height:30px;" type="text" ' +
+            '              value="' + verify(page.height) + '" placeholder="">' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       接收数据:' +
+            '       <input id="' + num + '_' + subnum + '_pageRecv" name="' + num + '_pageRecv[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(page.recv) + '" placeholder=""' +
+            '              onclick="openrecvDialog(' + 3 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '   <div style="margin:2px 2px 2px 2px;width:calc(50% - 4px);height:30px;float:left;">' +
+            '       点击事件:' +
+            '       <input id="' + num + '_' + subnum + '_pageSend" name="' + num + '_pageSend[]" style="width:calc(100% - 80px);height:30px;" type="text" ' +
+            '              value="' + verify(page.send) + '" placeholder=""' +
+            '              onclick="opensendDialog(' + 3 + ',' + num + ',' + subnum + ')" readonly>' +
+            '   </div>' +
+            '</div>');
+        $('#pageTab' + num).get(0).append(pageTab.get(0));
+        $('#pageTabContent' + num).get(0).append(pageTabContent.get(0));
+        if (page.newcreate || subnum === 0) {
+            $('#pageTab' + num + ' a:last').click();
+        }
+        $('#pageDel_' + num + '_' + subnum).on("click", function (event) {
+            $.ajax({
+                type: "DELETE",
+                url: "{:url('/flyuiapi/cellpage')}",
+                data: {pageId: page.pageId},
+                success: function (data) {
+                    $('#loadingDialog').fadeOut(100);
+                    var obj = JSON.parse(data);
+                    if (obj.code === 0) {
+                        $('#pageTab' + num).get(0).removeChild(pageTab.get(0));
+                        $('#pageTab' + num + ' a:last').click();
+                        $('#pageTabContent' + num).get(0).removeChild(pageTabContent.get(0));
+                    } else {
+                        alert(obj.msg);
+                    }
+                }
+            });
+        });
+        var str1 = isTextEmpty(page.recv) ? page.recv : JSON.stringify(page.recv);
+        $('#' + num + '_' + subnum + '_pageRecv').val(str1 == "null" ? "" : str1);
+        var str2 = isTextEmpty(page.send) ? page.send : JSON.stringify(page.send);
+        $('#' + num + '_' + subnum + '_pageSend').val(str2 == "null" ? "" : str2);
+    }
+
+    function refreshFlyImage() {
+        $('.FlyImageInput').flyinput({
+            ajaxurl: "{:url('/flyuiapi/imagefile')}",
+            postData: true,
+            width: "100%",
+            height: "240px"
+        }).bind("success", function (e, data) {
+            if (0 == data.subnum) {
+                $("#" + data.num + "_width").val(data.width);
+                $("#" + data.num + "_height").val(data.height);
+            }
+        }).bind("del", function (e, data) {
+        });
+    }
+
+    function addNewCell() {
+        addCell(cellnum);
+        cellnum++;
+    }
+
+    function addNewText(num) {
+        addText(num, textsNum[num]);
+        textsNum[num]++;
+    }
+
+    function addNewImage(num) {
+        addImage(num, imagesNum[num]);
+        imagesNum[num]++;
+    }
+
+    function addNewPage(num, subcellId) {
+        if (undefined === subcellId) {
+            if (num > 0) {
+                return;
+            }
+            subcellId = 0;
+        }
+        $.ajax({
+            type: "POST",
+            url: "{:url('/flyuiapi/cellpage')}",
+            data: {cellId: "{$id}", subcellId: subcellId},
+            success: function (data) {
+                $('#loadingDialog').fadeOut(100);
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    obj.data.pageId = obj.data.cellpageId;
+                    obj.data.width = $('#0_width').val();
+                    obj.data.height = $('#0_height').val();
+                    obj.data.newcreate = true;
+                    addPage(num, pagesNum[num], obj.data);
+                    pagesNum[num]++;
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        })
+    }
+
+    function openrecvDialog(type, num, subnum) {
+        var jsonInput = type === 0 ? $('#' + num + '_recv') :
+            type === 1 ? $('#' + num + '_' + subnum + '_textRecv') :
+                type === 2 ? $('#' + num + '_' + subnum + '_imageRecv') :
+                    $('#' + num + '_' + subnum + '_pageRecv');
+        $('#recvDialog').flyjsonedit("show", jsonInput, jsonInput.val());
+    }
+
+    function opensendDialog(type, num, subnum) {
+        var jsonInput = type === 0 ? $('#' + num + '_send') :
+            type === 1 ? $('#' + num + '_' + subnum + '_textSend') :
+                type === 2 ? $('#' + num + '_' + subnum + '_imageSend') :
+                    $('#' + num + '_' + subnum + '_pageSend');
+        $('#sendDialog').flyjsonedit("show", jsonInput, jsonInput.val());
+    }
+
+    function openLanguageDialog(num, subnum) {
+        var jsonInput = $('#' + num + '_' + subnum + '_text');
+        $('#languageDialog').flyjsonedit("show", jsonInput, jsonInput.val());
+    }
+
+    function openPageEditDialog(pageId,num,subnum) {
+        $('.flyscreen').screen("refresh", pageId);
+        $('.showdelete').prop("checked", true);
+        $('.showadjust').prop("checked", true);
+        $('.flyscreen').screen("showdelete", true);
+        $('.flyscreen').screen("showadjust", true);
+        $('#cellPageDialog').flyjsonedit("show");
+    }
+
+    function onCancel() {
+        window.history.back();
+    }
+
+    function saveForm(id) {
+        $('#loadingDialog').fadeIn(100);
+        $.ajax({
+            type: id > 0 ? "PUT" : "POST",
+            url: "{:url('/flyuiapi/cell')}",
+            data: $('#flyform').serialize(),
+            error: function (request) {
+                $('#loadingDialog').fadeOut(100);
+                alert("error code:" + request.readyState);
+            },
+            success: function (data) {
+                $('#loadingDialog').fadeOut(100);
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    refreshCell(id);
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        })
+    }
+
+    function postForm(id, noRefresh) {
+        $('#loadingDialog').fadeIn(100);
+        $.ajax({
+            type: id > 0 ? "PUT" : "POST",
+            url: "{:url('/flyuiapi/cell')}",
+            data: $('#flyform').serialize(),
+            error: function (request) {
+                $('#loadingDialog').fadeOut(100);
+                alert("error code:" + request.readyState);
+            },
+            success: function (data) {
+                $('#loadingDialog').fadeOut(100);
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    if (true === noRefresh) {
+                        // refreshCell(id);
+                    } else {
+                        window.history.back();
+                    }
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        })
+    }
+
+    function refreshCell(id) {
+        cellnum = 0;
+        imagesNum = [];
+        textsNum = [];
+        pagesNum = [];
+        $('#cellTab').get(0).innerHTML =
+            '<li style="float:right;">' +
+            '   <button type="button" onclick="addNewCell();" style="width:36px;line-height: 30px;float: right">╋</button>' +
+            '</li>';
+        $('#cellTabContent').get(0).innerHTML = "";
+
+        $.ajax({
+            type: "GET",
+            url: "{:url('/flyuiapi/cell')}?id=" + id,
+            data: $('#flyform').serialize(),
+            error: function (request) {
+                alert("error code:" + request.readyState);
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    var cell = obj.data;
+                    addCell(0, cell);
+                    cellnum++;
+                    if (cell.subCells !== undefined && cell.subCells.length > 0) {
+                        for (var i = 0; i < cell.subCells.length; i++) {
+                            addCell(i + 1, cell.subCells[i]);
+                            cellnum++;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    $(function () {
+        if ("{$id}" <= 0) {
+            addNewCell();
+        } else {
+            refreshCell("{$id}");
+        }
+    });
+
+    $('#recvDialog').flyjsonedit({
+        title: "接受数据",
+        width: "600px",
+        height: "520px",
+        inputIds: ["recvId", "visibleContent", "disVisibleContent", "keyId", "animId", "startAnim", "stopAnim"],
+    }).bind("confirm", function (e, data) {
+        if ("{$id}" > 0) {
+            postForm('{$id}', true);
+        }
+    });
+
+    $('#sendDialog').flyjsonedit({
+        title: "点击事件",
+        width: "600px",
+        height: "480px",
+        inputIds: ["eventId", "eventContent", "packName", "className", "intent", "flyAction"]
+    }).bind("confirm", function (e, data) {
+        if ("{$id}" > 0) {
+            postForm('{$id}', true);
+        }
+    });
+
+    $('#languageDialog').flyjsonedit({
+        title: "语言设置",
+        width: "800px",
+        height: "480px",
+        inputIds: ["en", "zh_rCN", "zh_rTW", "ru", "el", "pl", "tr", "ar", "fa", "ro", "fr", "hu", "it", "th", "de", "uk", "es", "pt"]
+    }).bind("confirm", function (e, data) {
+        if ("{$id}" > 0) {
+            postForm('{$id}', true);
+        }
+    });
+
+    $('.flyscreen').screen({
+        width: 1024,
+        height: 600,
+        url: "{:url('/flyuiapi/cellpagecell')}",
+        defimgurl: "__RES__/flyui/img/default_cellmenu.png"
+    });
+
+    $('.flymenu').menu({
+        width: 380,
+        height: 600,
+        url: "{:url('/flyuiapi/cell')}",
+        defimgurl: "__RES__/flyui/img/default_cellmenu.png",
+        childw:120,
+        childh:120
+    });
+
+    $('#cellPageDialog').flyjsonedit({
+        title: "图层编辑",
+        width: "100%",
+        height: "100%",
+        confirm:true
+    });
+
+
+
+</script>

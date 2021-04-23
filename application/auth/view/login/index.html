@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>JanCar-管理系统</title>
+    <link rel="stylesheet" type="text/css" href="__RES__/auth/css/auth.css"/>
+    <link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+    <script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+    <script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="__RES__/auth/js/md5.js"></script>
+    <script type="text/javascript" src="__RES__/auth/js/times.js"></script>
+</head>
+<body onload="showLeftTime()">
+<div class="login-mask">
+    <img class="backimg" src="__RES__/auth/img/back.jpg">
+</div>
+<div class="top">
+    <div class="top-logo">
+        <img alt="" src="__RES__/auth/img/logo.png">
+    </div>
+    <div class="top-name">
+        <div class="top-name-cn">管理系统</div>
+    </div>
+    <div class="top-info">
+        <div class="top-info-date">
+            <label id="show">显示时间的位置</label>
+        </div>
+    </div>
+</div>
+<div class="login-center">
+    <form name="loginform" id="loginform" class="form-horizontal" accept-charset="utf-8" action='{:url("/auth/login/login")}' method="post">
+        <div class="modal-header">
+            <h3 class="modal-title" id="">登&emsp;陆</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">帐&emsp;&emsp;号：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="loginname" id="loginname" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">密&emsp;&emsp;码：</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" name="loginword" id="loginword" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">验&ensp;证&ensp;码：</label>
+                <div class="col-sm-8">
+                    <img id="captchaimg" src="{:captcha_src()}" onclick="refreshVerify()"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">验&ensp;证&ensp;码：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="captcha" name="captcha" value="">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-sm-6" style="margin-top:10px;text-align: center" id="message">&emsp;</div>
+            <button type="button" class="btn btn-default" id="login">登陆</button>
+            <button type="reset" class="btn btn-default" id="reset">重置</button>
+        </div>
+    </form>
+</div>
+<div class="login-end">
+    <div class="top-info-bottom">
+        <a href="{:url('/auth/register')}">注册帐号</a>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        $('#login').click(function () {
+            // 判断是否为空
+            if ($('#loginname').val() === "") {
+                $('#message').html("<font color='red'><b>请输入帐号</b></font>");
+                $('#loginname').focus();
+                return false;
+            }
+            if ($('#loginword').val() === "") {
+                $('#message').html("<font color='red'><b>请输入密码</b></font>");
+                $('#loginword').focus();
+                return false;
+            }
+            if ($('#captcha').val() === "") {
+                $('#message').html("<font color='red'><b>请输入验证码</b></font>");
+                $('#captcha').focus();
+                return false;
+            }
+            // 判断用户名密码是否正确
+            var loginword = hex_md5(document.getElementById("loginword").value);
+            $.ajax({
+                url: "{:url('/auth/login/login')}",
+                type: "post",
+                data: "loginname=" + $("#loginname").val() + "&loginword=" + loginword + "&captcha=" + $("#captcha").val(),
+                dataType: 'html',
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    if (obj.code === 0) {
+                        window.location.href = "{:url('/admin/index')}";
+                        return true;
+                    } else {
+                        $("#message").html("<font color='red'><b>" + obj.msg + "</b></font>");
+                        refreshVerify();
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $('#reset').click(function () {
+            $("#message").html("&emsp;");
+        });
+
+    });
+
+    function refreshVerify() {
+        var ts = Date.parse(new Date()) / 1000;
+        var img = document.getElementById('captchaimg');
+        img.src = "{:url('/captcha?id=')}" + ts;
+    }
+
+</script>

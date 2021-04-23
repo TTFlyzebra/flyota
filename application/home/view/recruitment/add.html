@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-table.css">
+<script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="__RES__/news/js/flyinput.js"></script>
+<body>
+<form class="form-horizontal" name="recruitmentform" id="recruitmentform" method="post" role="form"
+      action="{:url('/homeapi/recruitment')}"
+      enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title" id="">新增招聘信息</h4>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="col-sm-1 control-label">招聘职位</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="recruitmentTitle" id="recruitmentTitle" value=""
+                       placeholder="请输入标题">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">职位描述</label>
+            <div class="col-sm-5">
+                            <textarea class="form-control" style="height: 400px" name="recruitmentText" value="" id="recruitmentText"
+                                      placeholder=""></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="onCancel()">取消</button>
+        <button type="reset" class="btn btn-default">重置</button>
+        <button type="button" class="btn btn-primary" onclick="postrecruitment()">提交</button>
+    </div>
+</form>
+</body>
+</html>
+
+<script type="text/javascript">
+    var recruitmenturl = "{:url('/homeapi/recruitment')}";
+    var upimageurl = "{:url('/homeapi/imagefile')}";
+
+    //POST提交数据
+    function postrecruitment() {
+        if ($('#recruitmentTitle').val() === "") {
+            $('#recruitmentTitle').focus();
+            return
+        }
+        $.ajax({
+            type: "POST",
+            url: recruitmenturl,
+            data: $('#recruitmentform').serialize(),
+            error: function (request) {
+                alert("error code:" + request.readyState);
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if (obj.code === 0) {
+                    window.history.back();
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        });
+    }
+
+    $('#flyimageup1').flyinput({
+        url: upimageurl,
+        autoup: true,
+        showPreview: true,
+        width: "100%",
+        height: "240px"
+    }).on("success", function (event, data) {
+        var result = JSON.parse(data);
+        $('#imageurl').val(result.data.saveName);
+    });
+
+    function onCancel() {
+        window.location.href = "{:url('/home/recruitment')}";
+    }
+
+</script>

@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理系统</title>
+    <link rel="stylesheet" type="text/css" href="__RES__/auth/css/auth.css"/>
+    <link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+    <script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+</head>
+<body>
+<div class="modal-header">
+    <h4 class="modal-title">网站管理[划分网站权限节点]</h4>
+</div>
+<div class="apps-title"><label>配置权限</label><a href="javascript:addDlg('网站目录','0','/');">＋</a>
+    {volist name="list" id="v" key="k"}
+    <div class="apps">
+        <div class="app">{$v.name}
+            <a href="javascript:addDlg('{$v.name}','{$v.id}','{$v.path}/');">＋</a>
+            {if condition="$v['child'] eq null"}
+            <a href="javascript:delDlg('{$v.id}');">－</a>
+            {/if}
+            <a href="javascript:editDlg('{$v.id}','{$v.name}','{$v.path}','{$v.pid}','{$v.description}','/','网站目录','{$v.status}');">Ｅ</a>
+        </div>
+        {volist name="v['child']" id="c" key="k"}
+        <div class="controls">
+            <div class="control">{$c.name}
+                <a href="javascript:addDlg('{$c.name}','{$c.id}','{$c.path}/');">＋</a>
+                {if condition="$c['child'] eq null"}
+                <a href="javascript:delDlg('{$c.id}');">－</a>
+                {/if}
+                <a href="javascript:editDlg('{$c.id}','{$c.name}','{$c.path}','{$c.pid}','{$c.description}','{$v.path}/','{$v.name}','{$c.status}');">Ｅ</a>
+            </div>
+            {volist name="c['child']" id="m" key="k"}
+            <div class="method">{$m.name}
+                <a href="javascript:delDlg('{$m.id}');">－</a>
+                <a href="javascript:editDlg('{$m.id}','{$m.name}','{$m.path}','{$m.pid}','{$m.description}','{$c.path}/','{$c.name}','{$m.status}');">Ｅ</a>
+            </div>
+            {/volist}
+        </div>
+        {/volist}
+    </div>
+    {/volist}
+</div>
+<!--弹出菜单 Start-->
+<div class="node-mask"></div>
+<!--添加菜单 Start-->
+<div class="node-dlg-add">
+    <form class="form-horizontal" name="addFrom" id="addFrom" accept-charset="utf-8" action="{:url('/auth/permission/add')}" method="post">
+        <div class="modal-header">
+            <div class="node-dlg-title">添加节点
+                <div class="node-dlg-title-close"><a href="javascript:closeAddDlg();" title="关闭">×</a></div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点名称：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" id="node_name" name="name" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点路径：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" id="node_path2" name="path" value="">
+                    <input class="form-control" type="text" id="node_path" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">是否启用：</label>
+                <div class="col-sm-4">
+                    <input class="common-text" name="status" value="1" type="radio" checked="checked">开启
+                </div>
+                <div class="col-sm-4">
+                    <input class="common-text" name="status" value="0" type="radio">关闭
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">父&ensp;节&ensp;点：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" id="node_pid" name="pid" value="">
+                    <div id="parent_name1"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点描述：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" id="node_description" name="description" value="">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-sm-6" style="margin-top:10px;text-align: center" id="messageadd">&emsp;</div>
+            <input type="button" class="btn btn-primary btn6 mr10" value="添加" id="add">
+            <input type="reset" class="btn btn-primary btn6 mr10" value="重置" id="reset1">
+        </div>
+    </form>
+</div>
+<!--修改菜单 Start-->
+<div class="node-dlg-edit">
+    <form class="form-horizontal" name="editForm" id="editForm" accept-charset="utf-8" action="{:url('/auth/permission/edit')}" method="post">
+        <input type="hidden" id="edit_id" name="id" value="0">
+        <div class="modal-header">
+            <div class="node-dlg-title">修改节点
+                <div class="node-dlg-title-close"><a href="javascript:closeEditDlg();" title="关闭">×</a></div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点名称：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" id="edit_name" name="name" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点路径：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" id="edit_path2" name="path" value="">
+                    <input class="form-control" type="text" id="edit_path" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">是否启用：</label>
+                <div class="col-sm-4">
+                    <input id="edit_radio1" class="common-text" name="status" value="1" type="radio" checked="checked">开启
+                </div>
+                <div>
+                    <input id="edit_radio2" class="common-text" name="status" value="0" type="radio">关闭
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">父&ensp;节&ensp;点：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" id="edit_pid" name="pid" value="">
+                    <div id="parent_name2"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">节点描述：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" id="edit_description" name="description">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-sm-6" style="margin-top:10px;text-align: center" id="messageedit">&emsp;</div>
+            <input type="button" class="btn btn-primary btn6 mr10" value="修改" id="edit">
+            <input type="reset" class="btn btn-primary btn6 mr10" value="重置" id="reset2">
+        </div>
+    </form>
+</div>
+<!--弹出菜单 End-->
+</body>
+</html>
+
+<script type="text/javascript">
+    function closeAddDlg() {
+        $('.node-dlg-add').fadeOut(100);
+        $('.node-mask').fadeOut(100);
+        $("#messageadd").html("&emsp;");
+    }
+
+    function closeEditDlg() {
+        $('.node-dlg-edit').fadeOut(100);
+        $('.node-mask').fadeOut(100);
+        $("#messageedit").html("&emsp;");
+    }
+
+    function addDlg(s1, s2, s3) {
+        $('.node-dlg-add').fadeIn(100);
+        $('.node-mask').fadeIn(100);
+        // 设置初始值
+        $("#parent_name1").html(s1 + "[路径：" + s3 + "]");
+        $("#node_pid").val(s2);
+        $("#node_path2").val(s3);
+    }
+
+    function editDlg(s1, s2, s3, s4, s5, s6, s7, s8) {
+        $('.node-dlg-edit').fadeIn(100);
+        $('.node-mask').fadeIn(100);
+        // 设置初始值
+        $("#edit_id").val(s1);
+        $("#edit_name").val(s2);
+        var start = s3.lastIndexOf('/') + 1;
+        var path = s3.substring(start);
+        $("#edit_path").val(path);
+        $("#edit_path2").val(s6);
+        $("#edit_pid").val(s4);
+        $("#edit_description").val(s5);
+        $("#parent_name2").html(s7 + "[路径：" + s6 + "]");
+        if (s8 == 1) {
+            $("#edit_radio1").click();
+        } else {
+            $("#edit_radio2").click();
+        }
+    }
+
+    $('#reset1').click(function () {
+        $("#messageadd").html("&emsp;");
+    });
+
+    $('#reset2').click(function () {
+        $("#messageedit").html("&emsp;");
+    });
+
+    $('#add').click(function () {
+        var path = $("#node_path2").val() + $("#node_path").val();
+        $("#node_path2").val(path);
+        $.ajax({
+            type: "POST",
+            url: "{:url('/auth/permission/add')}",
+            data: $('#addFrom').serialize(),
+            error: function (request) {
+                $('#messageadd').html("<font color='red'><b>error code:" + request.readyState + "</b></font>");
+            },
+            success: function (result) {
+                var obj = JSON.parse(result);
+                if (obj.code === 0) {
+                    window.location.href = "{:url('/auth/permission/index')}";
+                } else {
+                    $('#messageadd').html("<font color='red'><b>" + obj.msg + "</b></font>");
+                }
+            }
+        });
+    });
+
+    $('#edit').click(function () {
+        var path = $("#edit_path2").val() + $("#edit_path").val();
+        $("#edit_path2").val(path);
+        $.ajax({
+            type: "PUT",
+            url: "{:url('/auth/permission/edit')}",
+            data: $('#editForm').serialize(),
+            error: function (request) {
+                $('#messageedit').html("<font color='red'><b>error code:" + request.readyState + "</b></font>");
+            },
+            success: function (result) {
+                var obj = JSON.parse(result);
+                if (obj.code === 0) {
+                    window.location.href = "{:url('/auth/permission/index')}";
+                } else {
+                    $('#messageedit').html("<font color='red'><b>" + obj.msg + "</b></font>");
+                }
+            }
+        });
+    });
+
+    function delDlg(s1) {
+        $.ajax({
+            url: "{:url('/auth/permission/del')}",
+            type: 'DELETE',
+            data: "id=" + s1,
+            error: function (result) {
+                alert("error code:" + request.readyState);
+            },
+            success: function (result) {
+                var obj = JSON.parse(result);
+                if (obj.code === 0) {
+                    parent.location.reload();
+                    window.location.reload();
+                } else {
+                    alert(obj.msg);
+                }
+            }
+        });
+    }
+</script>

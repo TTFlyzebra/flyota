@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="__RES__/auth/css/auth.css"/>
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-table.css">
+<script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="__RES__/common/js/bootstrap-table-zh-CN.min.js"></script>
+<body>
+<div id="toolbar" style="font-size: 20px;text-indent: 10px">用户管理</div>
+<table id="flytable"></table>
+
+<!--弹出菜单 start-->
+<div class="node-mask"></div>
+<div class="user-dlg">
+    <form class="form-horizontal" name="UserRoleForm" id="UserRoleForm" method="post" role="form"
+          action="{:url('/auth/user/userrole')}"
+          enctype="multipart/form-data">
+        <div class="modal-header">
+            <h4 class="modal-title" id="">配置角色</h4>
+        </div>
+        <div class="modal-body" style="height:220px;overflow: auto">
+            <div class="form-group" style="display: none">
+                <input style="margin: 10px" id="radio_null" name="role_id" value="-1" type="radio" checked="checked">未配置
+            </div>
+            {volist name="list" id="v" key="k"}
+            <div class="form-group">
+                <input style="margin: 10px" id="radio_{$v.id}" name="role_id" value="{$v.id}" type="radio">{$v.name}
+            </div>
+            {/volist}
+        </div>
+        <input type="hidden" id="user_id" name="user_id" value="">
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="closeDlg()">取消</button>
+            <button type="button" class="btn btn-primary" onclick="postSave()">确定</button>
+        </div>
+    </form>
+</div>
+<!--弹出菜单 end-->
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        var oTable = new TableInit();
+        oTable.Init();
+    });
+    var TableInit = function () {
+        var oTableInit = new Object();
+        //初始化Table
+        oTableInit.Init = function () {
+            $('#flytable').bootstrapTable({
+                url: "{:url('/auth/user/api')}",     //请求后台的URL（*）
+                method: 'get',                      //请求方式（*）
+                dataType: 'json',
+                toolbar: '#toolbar',                //工具按钮用哪个容器
+                striped: true,                      //是否显示行间隔色
+                cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                pagination: true,                   //是否显示分页（*）
+                sortable: false,                    //是否启用排序
+                sortOrder: "asc",                   //排序方式
+                queryParams: function (params) {
+                    return {
+                        offset: params.offset,
+                        limit: params.limit,
+                    };
+                },                                  //传递参数（*）
+                sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber: 1,                      //初始化加载第一页，默认第一页
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [5, 10, 20, 50, 100, 200],   //可供选择的每页的行数（*）
+                search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+                strictSearch: false,
+                showColumns: true,                  //是否显示所有的列
+                showRefresh: true,                  //是否显示刷新按钮
+                minimumCountColumns: 2,             //最少允许的列数
+                clickToSelect: true,                //是否启用点击选中行
+//                height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                uniqueId: "id",             //每一行的唯一标识，一般为主键列
+                showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+                cardView: false,                    //是否显示详细视图
+                detailView: false,                  //是否显示父子表
+                columns: [{
+                    checkbox: true
+                }, {
+                    field: 'user_name',
+                    title: '用户名',
+                    halign: "center"
+                }, {
+                    field: 'mobile',
+                    title: '手机号码',
+                    halign: "center"
+                }, {
+                    field: 'email',
+                    title: '邮箱',
+                    halign: "center"
+                }, {
+                    field: 'createtime',
+                    title: '创建时间',
+                    align: 'center',
+                    halign: "center"
+                }, {
+                    field: 'role_name',
+                    title: '用户角色',
+                    align: 'center',
+                    halign: "center"
+                }, {
+                    field: 'id',
+                    title: '操作',
+                    halign: "center",
+                    align: 'center',
+                    formatter: function (value, row) {
+                        return '<a  href="javascript:openDlg(' + value + ',' + row.role_id + ')">配置角色</a>';
+                    }
+                }]
+            });
+        };
+        //得到查询的参数
+        return oTableInit;
+    };
+
+    function closeDlg() {
+        $('.user-dlg').fadeOut(100);
+        $('.node-mask').fadeOut(100);
+    }
+
+    function openDlg(s1, s2) {
+        $('.user-dlg').fadeIn(100);
+        $('.node-mask').fadeIn(100);
+        $('#user_id').val(s1);
+        $('#radio_'+s2).click();
+    }
+
+
+    function postSave() {
+        $.ajax({
+            type: "POST",
+            url: "{:url('/auth/user/userrole')}",
+            data: $('#UserRoleForm').serialize(),
+            error: function (request) {
+                alert("error code:"+request.readyState);
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if(obj.code===0){
+                    window.location.href = "{:url('/auth/user')}";
+                }else{
+                    alert(obj.msg);
+                }
+            }
+        });
+    }
+</script>
+
