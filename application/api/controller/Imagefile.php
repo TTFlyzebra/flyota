@@ -1,6 +1,6 @@
 <?php
 
-namespace app\homeapi\controller;
+namespace app\api\controller;
 
 class Imagefile
 {

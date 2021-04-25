@@ -35,4 +35,13 @@ class Otapackage extends Auth
         $this->assign('item', $item);
         return $this->fetch();
     }
+
+    public function test()
+    {
+        return $this->fetch();
+    }
+
+    public function upload(){
+
+    }
 }

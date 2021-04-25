@@ -2,12 +2,10 @@
 <html lang="en">
 <link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-theme.css">
-<link rel="stylesheet" type="text/css" href="__RES__/common/css/bootstrap-table.css">
+<link rel="stylesheet" type="text/css" href="__RES__/common/webuploader-dist-v0.1.1/webuploader.css">
 <script type="text/javascript" src="__RES__/common/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="__RES__/common/js/bootstrap.js"></script>
-<script type="text/javascript" src="__RES__/common/js/bootstrap-table.js"></script>
-<script type="text/javascript" src="__RES__/common/js/bootstrap-table-zh-CN.min.js"></script>
-<script type="text/javascript" src="__RES__/fota/js/flyimage.js"></script>
+<script src="__RES__/common/webuploader-dist-v0.1.1/webuploader.js"></script>
 <body>
 <form class="form-horizontal" name="otapackageform" id="otapackageform" method="post" role="form"
       action="{:url('/fotaapi/otapackage')}"
@@ -17,11 +15,35 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
+            <label class="col-sm-1 control-label">升级包</label>
+            <div class="col-sm-5">
+                <div id="uploader" class="wu-example" style="height: 35px">
+                    <div id="thelist" class="uploader-list">
+                        <div id="picker">选择文件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">MD5</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="md5sum" id="md5sum"
+                       value="{$item.md5sum}" readonly="readonly">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">下载地址</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="downurl" id="downurl"
+                       value="{$item.downurl}" readonly="readonly">
+            </div>
+        </div>
+        <div class="form-group">
             <label class="col-sm-1 control-label">版本号</label>
             <div class="col-sm-5">
                 <input type="text" class="form-control" name="version" id="version"
                        value="{$item.version}"
-                       placeholder="请输入名称">
+                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
             </div>
         </div>
         {if condition="$item['otapackageId'] gt 0"}
@@ -43,21 +65,55 @@
 
 <script type="text/javascript">
     var otapackageurl = "{:url('/fotaapi/otapackage')}";
+    // 文件上传
+    var $ = jQuery,
+        $list = $('#thelist'),
+        state = 'pending'
+    var uploader = WebUploader.create({
+        auto: true,//是否自动上传，true为自动上传
+        resize: false,
+        swf: '__RES__/common/webuploader-dist-v0.1.1/Uploader.swf',
+        server: '{:url("/api/fotafile")}',
+        pick: '#picker',
+        fileVal: 'fotafile',
+        chunked: false,
+        chunkSize: 50 * 1024 * 1024,
+        threads: 5,
+        duplicate: true
+    });
+    uploader.on('fileQueued', function (file) {
+        $("#picker").hide();
+        $list.append('<div id="' + file.id + '" class="item">' + '</div>');
+    });
+    uploader.on('uploadProgress', function (file, percentage) {
+        var $li = $('#' + file.id);
+        var $percent = $list.find('.progress .progress-bar');
+        $percent.show();
+        if (!$percent.length) {
+            $percent = $('<div class="progress progress-striped active" style="height: 35px">' +
+                '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                '</div>' +
+                '</div>').appendTo($li).find('.progress-bar');
+        }
+        $percent.css('width', percentage * 100 + '%');
+    });
+    uploader.on('uploadError', function (file) {
+    });
+    uploader.on('uploadSuccess', function (file, response) {
+        console.log(response._raw);
+        var obj = JSON.parse(response._raw);
+        $("#md5sum").val(obj.data.md5sum);
+        $("#downurl").val(obj.data.downurl);
+    });
+    uploader.on('uploadComplete', function (file) {
+        $list.find('.progress').hide();
+        $("#picker").show();
+    });
 
     //POST提交数据
     function postform() {
-        if ($('#otapackageName').val() === "") {
-            $('#otapackageName').focus();
-            return
-        }
-
-        if ($('#otapackage').val() === "") {
-            $('#otapackage').focus();
-            return
-        }
-
         $.ajax({
-            type: "{$item.otapackageId}" <= 0?"POST":"PUT",
+            type: "{$item.otapackageId}" <= 0 ? "POST" : "PUT",
             url: otapackageurl,
             data: $('#otapackageform').serialize(),
             error: function (request) {

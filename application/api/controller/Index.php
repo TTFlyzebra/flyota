@@ -2,9 +2,6 @@
 
 namespace app\api\controller;
 
-use think\Db;
-use think\Session;
-
 class Index
 {
     public function index()
