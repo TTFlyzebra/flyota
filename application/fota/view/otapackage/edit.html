@@ -15,6 +15,18 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
+            <label class="col-sm-1 control-label">系统类型</label>
+            <div class="col-sm-5">
+                <select id="systemId" style="height: 30px;border:solid;border-width:1px;border-color:#000000;"
+                        name="systemId">
+                    <option value="OC_VLTE" selected="selected">VLTE</option>
+                    <option value="OC_CPE">CPE2</option>
+                    <option value="OC_C8">C8</option>
+                    <option value="OC_C10">C10</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
             <label class="col-sm-1 control-label">升级包</label>
             <div class="col-sm-5">
                 <div id="uploader" class="wu-example" style="height: 35px">
@@ -32,18 +44,48 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">下载地址</label>
+            <label class="col-sm-1 control-label">文件路径</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" name="downurl" id="downurl"
-                       value="{$item.downurl}" readonly="readonly">
+                <input type="text" class="form-control" name="filepath" id="filepath" value="{$item.filepath}"
+                       readonly="readonly">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">版本号</label>
+            <label class="col-sm-1 control-label">下载地址</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="downurl" value="" readonly="readonly">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">文件大小</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="filesize" id="filesize"
+                       value="{$item.filesize}" readonly="readonly">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">升级版本号</label>
             <div class="col-sm-5">
                 <input type="text" class="form-control" name="version" id="version"
                        value="{$item.version}"
                        placeholder="例如：CM3003_V5.4.1_2021041600_USER">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">原始版本号</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="oldversion" id="oldversion"
+                       value="{$item.oldversion}"
+                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">强制更新</label>
+            <div class="col-sm-5" style="height: 32px">
+                <div style="padding-left:10px;padding-right:10px;border:solid;border-width:1px;border-color: #EEEEEE;float: left;line-height: 32px">
+                    <input type="checkbox" style="margin-top:6px;" id="checkAutoup">
+                    <input type="hidden" name="autoup" id="autoup" value="0">
+                </div>
             </div>
         </div>
         {if condition="$item['otapackageId'] gt 0"}
@@ -65,7 +107,17 @@
 
 <script type="text/javascript">
     var otapackageurl = "{:url('/fotaapi/otapackage')}";
-    // 文件上传
+
+    //初始化控件
+    if ('{$item.autoup}' === '1') {
+        $('#checkAutoup').prop("checked", true);
+        $('#autoup').val(1);
+    } else {
+        $('#checkAutoup').prop("checked", false);
+        $('#autoup').val(0);
+    }
+
+    // 文件上传模块
     var $ = jQuery,
         $list = $('#thelist'),
         state = 'pending'
@@ -103,6 +155,8 @@
         console.log(response._raw);
         var obj = JSON.parse(response._raw);
         $("#md5sum").val(obj.data.md5sum);
+        $("#filepath").val(obj.data.filepath);
+        $("#filesize").val(obj.data.filesize);
         $("#downurl").val(obj.data.downurl);
     });
     uploader.on('uploadComplete', function (file) {
@@ -112,6 +166,9 @@
 
     //POST提交数据
     function postform() {
+
+        $('#autoup').val($('#checkAutoup').prop("checked") === true ? 1 : 0);
+
         $.ajax({
             type: "{$item.otapackageId}" <= 0 ? "POST" : "PUT",
             url: otapackageurl,

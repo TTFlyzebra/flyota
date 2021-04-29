@@ -23,25 +23,17 @@ class Otapackage extends Auth
         if (empty($item)) {
             $item = [
                 'otapackageId' => -1,
+                "systemId" => "",
                 "version" => "",
-                "downurl" => "",
+                "filepath" => "",
                 "filesize" => 0,
                 "md5sum" => "",
-                "otatype" => 0,
                 "oldversion" => "",
+                "autoup" => 0,
                 "remark" => "",
             ];
         }
         $this->assign('item', $item);
         return $this->fetch();
-    }
-
-    public function test()
-    {
-        return $this->fetch();
-    }
-
-    public function upload(){
-
     }
 }

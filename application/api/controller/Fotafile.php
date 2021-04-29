@@ -13,10 +13,11 @@ class Fotafile
             ->move(ROOT_PATH . 'upfota');//上传文件保存地址
             if ($info) {
                 $downurl = DS . 'upfota' . DS . $info->getSaveName();
-                $result['savepath'] = $downurl;
+                $result['filepath'] = $downurl;
                 $result['downurl'] = input('server.REQUEST_SCHEME') . '://'.$_SERVER['HTTP_HOST'].url($downurl);
                 $md5sum = substr($downurl,-37,-35).substr($downurl,-34,-4);
                 $result['md5sum'] = strtoupper($md5sum);
+                $result['filesize'] = $info->getInfo()["size"];
                 echo retJsonMsg("上传文件成功！", 0, $result);
             } else {
                 echo retJsonMsg("上传文件失败!", -1, $file->getError());

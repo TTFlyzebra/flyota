@@ -869,7 +869,7 @@ $("#sbutton").click(function () {
         }
     });
 
-    /*$.post("http://192.168.1.119:801/jancarweb/api/Factory", as,
+    /*$.post("http://192.168.1.119:801/澳克多普有限公司web/api/Factory", as,
 
          function(data){
              var  aaf= JSON.parse(data);
@@ -891,7 +891,7 @@ $("#sbutton").click(function () {
          });
 */
     //   $.download('/FileExport/DownLoadFile', 'post', "C:/Users/ouyan/Desktop/globaldata.xml"); // 下载文件
-    /*  $.post("http://192.168.1.119:801/jancarweb/api/Factory", a,
+    /*  $.post("http://192.168.1.119:801/澳克多普有限公司web/api/Factory", a,
 
           function(data){
               console.log(data );
@@ -901,7 +901,7 @@ $("#sbutton").click(function () {
 
     /*    $.ajax({
             type: 'POST',
-            url: "http://192.168.1.119:801/jancarweb/api/Factory",
+            url: "http://192.168.1.119:801/澳克多普有限公司web/api/Factory",
             data: data,
             success: success,
             dataType: dataType
