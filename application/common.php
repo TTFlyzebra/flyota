@@ -18,7 +18,7 @@
  * @param string $data
  * @return false|string
  */
-function retJsonMsg($message = "success!", $code = 0, $data = "")
+function retJsonMsg($message = "success!", $code = 0, $data = null)
 {
     $msg = array();
     $msg['msg'] = $message;

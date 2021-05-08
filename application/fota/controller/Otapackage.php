@@ -28,7 +28,7 @@ class Otapackage extends Auth
                 "filepath" => "",
                 "filesize" => 0,
                 "md5sum" => "",
-                "oldversion" => "",
+                "oldver" => "",
                 "autoup" => 0,
                 "remark" => "",
             ];
