@@ -20,7 +20,6 @@ class Version
             $post = $request->post();
             $sid = $post['sid'];
             $ver = $post['ver'];
-            $ver="CM3003_V5.4.3_2021042800_USER";
             $imei = $post['imei'];
             $uid = $post['uid'];
             $aid = $post['aid'];
