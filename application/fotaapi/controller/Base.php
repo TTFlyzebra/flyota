@@ -27,29 +27,8 @@
 namespace app\fotaapi\controller;
 
 use think\Controller;
-use think\Request;
 
 class Base extends Controller
 {
-    public function _initialize()
-    {
-        if(Request::instance()->isGet()){
-        }else if(Request::instance()->isPost()){
-            if (!session('userid')) {
-                $this->error("没有访问权限!");
-            }
-        }else if(Request::instance()->isPut()){
-            if (!session('userid')) {
-                $this->error("没有访问权限!");
-            }
-        }else if(Request::instance()->isDelete()){
-            if (!session('userid')) {
-                $this->error("没有访问权限!");
-            }
-        }else{
-            if (!session('userid')) {
-                $this->error("没有访问权限!");
-            }
-        }
-    }
+
 }

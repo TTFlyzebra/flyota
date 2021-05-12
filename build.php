@@ -62,22 +62,6 @@ return [
         'view'       => ['index/index'],
     ],
 
-    'flyui'     => [
-        '__file__'   => ['common.php'],
-        '__dir__'    => ['controller',  'view'],
-        'controller' => ['Index'],
-        'model'      => [],
-        'view'       => ['index/index'],
-    ],
-
-    'flyuiapi'     => [
-        '__file__'   => ['common.php'],
-        '__dir__'    => ['controller',  'view'],
-        'controller' => ['Index'],
-        'model'      => [],
-        'view'       => ['index/index'],
-    ],
-
     'fota'     => [
         '__file__'   => ['common.php'],
         '__dir__'    => ['controller',  'view'],

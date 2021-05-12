@@ -23,13 +23,15 @@ class Otapackage extends Auth
         if (empty($item)) {
             $item = [
                 'otapackageId' => -1,
-                "systemId" => "",
+                "osId" => "OC_VLTE",
                 "version" => "",
                 "filepath" => "",
                 "filesize" => 0,
                 "md5sum" => "",
                 "oldver" => "",
-                "autoup" => 0,
+                "upType" => 0,
+                "otaType" => 0,
+                "releaseNote" => "",
                 "remark" => "",
             ];
         }

@@ -1,7 +1,6 @@
 <?php
 
-namespace app\flyuiapi\controller;
-
+namespace app\fotaapi\controller;
 
 use think\Config;
 use think\Db;
@@ -9,31 +8,54 @@ use think\Exception;
 use think\Request;
 use think\Session;
 
-class BaseRestful extends Base
+class Phonelog
 {
-    public function handle($tableName, $order = null, $joins = null, $field = null)
+    public function _initialize()
     {
+        if (Request::instance()->isGet()) {
+            if (!session('userid')) {
+//                $this->error("没有访问权限!");
+            }
+        } else if (Request::instance()->isPut()) {
+            if (!session('userid')) {
+                $this->error("没有访问权限!");
+            }
+        } else if (Request::instance()->isDelete()) {
+            if (!session('userid')) {
+                $this->error("没有访问权限!");
+            }
+        } else {
+            if (!session('userid')) {
+                $this->error("没有访问权限!");
+            }
+        }
+    }
+
+    public function index()
+    {
+        $tableName = 'phone_log';
+        $order = 'phone_logId desc';
         try {
             $request = Request::instance();
             if ($request->isPost()) {
-                $table = $request->post();;
-                $table['ip'] = $request->ip();
-                $table['userid'] = Session::get('userid');
-                $result = Db::name($tableName)->insert($table, false, true);
+                $post = $request->post();
+                $phonelogItem['phoneId'] = $post['phoneId'];
+                $phonelogItem['event'] = $post['event'];
+                $phonelogItem['emsg'] = $post['emsg'];
+                $phonelogItem['userid'] = (!session('userid')) ? -1 : Session::get('userid');
+                $phonelogItem['ip'] = $request->ip();
+                $result = Db::name("phone_log")->insert($phonelogItem, false, true);
                 if ($result) {
-                    $table[$tableName . 'Id'] = $result;
-                    echo retJsonMsg("success!",0,$table);
-                    saveLog(Config::get('event')['add'], $tableName, $table);
+                    echo retJsonMsg("success!", 0, ['phone_logId'=>(int)$result]);
                 } else {
-                    echo retJsonMsg('add failed', -1, $result);
+                    echo retJsonMsg('add failed', -1, ['phone_logId'=>(int)$result]);
                 }
-            }elseif ($request->isDelete()) {
+            } elseif ($request->isDelete()) {
                 $deltable = $request->delete();
                 $deltable['status'] = 0;
                 $result = Db::name($tableName)->update($deltable);
                 if ($result) {
                     echo retJsonMsg();
-                    saveLog(Config::get('event')['del'], $tableName, $deltable);
                 } else {
                     echo retJsonMsg('del failed', -1, $result);
                 }
@@ -44,12 +66,11 @@ class BaseRestful extends Base
                 $result = Db::name($tableName)->update($table);
                 if ($result) {
                     echo retJsonMsg();
-                    saveLog(Config::get('event')['edit'], $tableName, $table);
                 } else {
                     echo retJsonMsg('edit failed', -1, $result);
                 }
             } elseif ($request->isGet()) {
-                $db = Db::name($tableName);
+                $db = Db::name("$tableName");
                 if ($request->has('limit', 'get') && $request->has('offset', 'get')) {
                     $db->limit($_GET['offset'], $_GET['limit']);
                 }
@@ -62,23 +83,23 @@ class BaseRestful extends Base
                     foreach ($joins as $v) {
                         $db->join($v[0], $v[1], $v[2]);
                     }
-                } else{
+                } else {
                     $db->where('status', 1);
                 }
 
-                if(empty($field)){
+                if (empty($field)) {
                     $db->field('status,userid,ip', true);
-                }else{
+                } else {
                     $db->field($field);
                 }
                 if ($request->has('id', 'get')) {
-                    $item = $db->where($tableName.'Id', $_GET['id'])->find();
+                    $item = $db->where($tableName . 'Id', $_GET['id'])->find();
                     if ($item) {
                         echo retJsonMsg("find ok!", 0, $item);
                     } else {
                         echo retJsonMsg('find failed!', -1);
                     }
-                }else {
+                } else {
                     $tables = $db->select();
                     if ($request->isAjax()) {
                         $resultdata['total'] = $db->where('status', 1)->count();
@@ -95,5 +116,4 @@ class BaseRestful extends Base
             echo retJsonMsg('exception', -1, $e);
         }
     }
-
 }

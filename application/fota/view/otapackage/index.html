@@ -74,7 +74,7 @@
                 columns: [{
                     checkbox: true
                 }, {
-                    field: 'systemId',
+                    field: 'osId',
                     title: '系统类型',
                     halign: "center",
                     align: "center"
@@ -89,25 +89,31 @@
                     halign: "center",
                     align: "center"
                 }, {
-                    field: 'md5sum',
-                    title: 'MD5',
-                    halign: "center",
-                    align: "center"
-                }, {
                     field: 'filesize',
                     title: '文件大小',
                     halign: "center",
-                    align: "center"
+                    align: "center",
+                    formatter: function (value) {
+                        return  Math.ceil(value/1024/1024)+"M";
+                    }
                 }, {
-                    field: 'autoup',
-                    title: '强制升级',
+                    field: 'upType',
+                    title: '触发条件',
                     halign: "center",
                     align: "center",
                     formatter: function (value) {
-                        return value===1 ? "是":"否";
+                        return value===0 ? "手动升级": (value===1?"自动升级":"测试版本");
                     }
                 }, {
-                    field: 'createtime',
+                    field: 'otaType',
+                    title: 'OTA包类型',
+                    halign: "center",
+                    align: "center",
+                    formatter: function (value) {
+                        return value===0 ? "完整包":"差分包";
+                    }
+                }, {
+                    field: 'uptime',
                     title: '修改时间',
                     halign: "center",
                     align: "center"

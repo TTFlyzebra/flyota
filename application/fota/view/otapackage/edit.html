@@ -15,32 +15,75 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label class="col-sm-1 control-label">系统类型</label>
-            <div class="col-sm-5">
-                <select id="systemId" style="height: 30px;border:solid;border-width:1px;border-color:#000000;"
-                        name="systemId">
-                    <option value="OC_VLTE" selected="selected">VLTE</option>
-                    <option value="OC_CPE">CPE2</option>
-                    <option value="OC_C8">C8</option>
-                    <option value="OC_C10">C10</option>
-                </select>
+            <label class="col-sm-1 control-label">基础选项</label>
+            <div class="col-sm-5" style="height: 32px">
+                <div style="padding-left:4px;margin-left:0px;border:solid;border-width:1px;border-color: #EEEEEE;float: left;line-height: 32px">
+                    硬件型号
+                    <select id="osId" style="height: 30px;border:solid;border-width:1px;border-color:#000000;"
+                            name="osId">
+                        <option value="OC_VLTE" selected="selected">OC_VLTE</option>
+                        <option value="OC_CPE">OC_CPE</option>
+                        <option value="OC_C8">OC_C8</option>
+                        <option value="OC_C10">OC_C10</option>
+                    </select>
+                </div>
+                <div style="padding-left:4px;margin-left:20px;border:solid;border-width:1px;border-color: #EEEEEE;float: left;line-height: 32px">
+                    解发条件
+                    <select id="upType" style="height: 30px;border:solid;border-width:1px;border-color:#000000;"
+                            name="upType">
+                        <option value="0" selected="selected">手动升级</option>
+                        <option value="1">自动升级</option>
+                        <option value="2">测试版本</option>
+                    </select>
+                </div>
+                <div style="padding-left:4px;margin-left:20px;border:solid;border-width:1px;border-color: #EEEEEE;float: left;line-height: 32px">
+                    OTA包类型
+                    <select id="otaType" style="height: 30px;border:solid;border-width:1px;border-color:#000000;"
+                            name="otaType">
+                        <option value="0" selected="selected">完整包</option>
+                        <option value="1">差分包</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">升级包</label>
+            <label class="col-sm-1 control-label">新版本号</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="version" id="version"
+                       value="{$item.version}"
+                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">旧版本号</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="oldver" id="oldver"
+                       value="{$item.oldver}"
+                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">版本说明</label>
+            <div class="col-sm-5">
+                <textarea class="form-control" style="height: 240px" name="releaseNote" value="{$item.releaseNote}"
+                          id="releaseNote" placeholder="">{$item.releaseNote}</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">MD5值</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" name="md5sum" id="md5sum"
+                       value="{$item.md5sum}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">OTA文件</label>
             <div class="col-sm-5">
                 <div id="uploader" class="wu-example" style="height: 35px">
                     <div id="thelist" class="uploader-list">
                         <div id="picker">选择文件</div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">MD5</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" name="md5sum" id="md5sum"
-                       value="{$item.md5sum}" readonly="readonly">
             </div>
         </div>
         <div class="form-group">
@@ -51,41 +94,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">下载地址</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" id="downurl" value="" readonly="readonly">
-            </div>
-        </div>
-        <div class="form-group">
             <label class="col-sm-1 control-label">文件大小</label>
             <div class="col-sm-5">
                 <input type="text" class="form-control" name="filesize" id="filesize"
                        value="{$item.filesize}" readonly="readonly">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">升级版本号</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" name="version" id="version"
-                       value="{$item.version}"
-                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">原始版本号</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" name="oldver" id="oldver"
-                       value="{$item.oldver}"
-                       placeholder="例如：CM3003_V5.4.1_2021041600_USER">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">强制更新</label>
-            <div class="col-sm-5" style="height: 32px">
-                <div style="padding-left:10px;padding-right:10px;border:solid;border-width:1px;border-color: #EEEEEE;float: left;line-height: 32px">
-                    <input type="checkbox" style="margin-top:6px;" id="checkAutoup">
-                    <input type="hidden" name="autoup" id="autoup" value="0">
-                </div>
             </div>
         </div>
         {if condition="$item['otapackageId'] gt 0"}
@@ -108,16 +120,38 @@
 <script type="text/javascript">
     var otapackageurl = "{:url('/fotaapi/otapackage')}";
 
-    //初始化控件
-    if ('{$item.autoup}' === '1') {
-        $('#checkAutoup').prop("checked", true);
-        $('#autoup').val(1);
-    } else {
-        $('#checkAutoup').prop("checked", false);
-        $('#autoup').val(0);
+    var osIdobj = document.getElementById("osId");
+    for (i = 0; i < osIdobj.length; i++) {
+        if (osIdobj[i].value === '{$item.osId}')
+            osIdobj[i].selected = true;
     }
+    document.getElementById("upType")['{$item.upType}'].selected = true;
+    document.getElementById("otaType")['{$item.otaType}'].selected = true;
 
     // 文件上传模块
+    // var deferred = WebUploader.Deferred();
+    // WebUploader.Uploader.register({
+    //     "before-send-file": "beforeSendFile",
+    // }, {
+    //     beforeSendFile: function (file) {
+    //         $.ajax({
+    //             type: "POST",
+    //             url: "/checkFileExist",
+    //             data: {
+    //                 md5: file.fileMd5
+    //             },
+    //             dataType: "json",
+    //             success: function (result) {
+    //                 console.log("result:"+result);
+    //                 deferred.resolve()
+    //             },
+    //             error: function () {
+    //                 console.log("error");
+    //                 deferred.reject()
+    //             }
+    //         });
+    //     }
+    // });
     var $ = jQuery,
         $list = $('#thelist'),
         state = 'pending'

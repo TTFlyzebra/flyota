@@ -2,6 +2,10 @@
 
 namespace app\api\controller;
 
+use think\Db;
+use think\Request;
+use think\Session;
+
 class Fotafile
 {
     public function index()
@@ -14,10 +18,22 @@ class Fotafile
             if ($info) {
                 $downurl = DS . 'upfota' . DS . $info->getSaveName();
                 $result['filepath'] = $downurl;
-                $result['downurl'] = input('server.REQUEST_SCHEME') . '://'.$_SERVER['HTTP_HOST'].url($downurl);
-                $md5sum = substr($downurl,-37,-35).substr($downurl,-34,-4);
+                $result['downurl'] = input('server.REQUEST_SCHEME') . '://' . $_SERVER['HTTP_HOST'] . url($downurl);
+                $md5sum = substr($downurl, -37, -35) . substr($downurl, -34, -4);
                 $result['md5sum'] = strtoupper($md5sum);
                 $result['filesize'] = $info->getInfo()["size"];
+                //保存文件到数据库
+                $db = Db::name("otafile");
+                if (!$db->where('md5sum', $result['md5sum'])->find()) {
+                    $otafileItem = [
+                        "md5sum" => $result['md5sum'],
+                        "filepath" => $result['filepath'],
+                        "filesize" => $result['filesize'],
+                        "ip" => Request::instance()->ip(),
+                        "userid" => Session::get('userid'),
+                    ];
+                    $db->insert($otafileItem, false, true);
+                }
                 echo retJsonMsg("上传文件成功！", 0, $result);
             } else {
                 echo retJsonMsg("上传文件失败!", -1, $file->getError());

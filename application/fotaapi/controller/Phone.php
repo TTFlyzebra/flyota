@@ -4,7 +4,7 @@ namespace app\fotaapi\controller;
 
 use think\Request;
 
-class Otapackage extends BaseRestful
+class Phone extends BaseRestful
 {
     public function _initialize()
     {
@@ -30,7 +30,7 @@ class Otapackage extends BaseRestful
 
     public function index()
     {
-        $this->handle('otapackage', 'version desc');
+        $this->handle('phone', 'phoneId desc');
     }
 
     public function test()
