@@ -2,7 +2,6 @@
 
 namespace app\fotaapi\controller;
 
-use think\Config;
 use think\Db;
 use think\Request;
 use think\Session;
@@ -25,10 +24,11 @@ class Version
             $aid = $post['aid'];
 
             //更新手机状态
-            $phoneItem['osId'] = $post['sid'];
-            $phoneItem['imei'] = $post['imei'];
-            $phoneItem['uid'] = $post['uid'];
-            $phoneItem['aid'] = $post['aid'];
+            $phoneItem['osId'] = $sid;
+            $phoneItem['imei'] = $imei;
+            $phoneItem['uid'] = $uid;
+            $phoneItem['aid'] = $aid ;
+            $phoneItem['version'] = $ver;
             $phoneItem['userid'] = (!session('userid')) ? -1 : Session::get('userid');
             $phoneItem['ip'] = $request->ip();
             $phoneDB = Db::name("phone");
@@ -40,6 +40,7 @@ class Version
                 ->find();
             if ($findItem) {
                 $result['phoneId'] = $findItem['phoneId'];
+                $phoneItem['count'] = $findItem['count']+1;
                 $phoneItem['phoneId'] = $findItem['phoneId'];
                 $ret = $phoneDB->update($phoneItem);
                 //TODO::

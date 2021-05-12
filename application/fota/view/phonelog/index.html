@@ -58,7 +58,7 @@
                 },                                  //传递参数（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
                 pageNumber: 1,                      //初始化加载第一页，默认第一页
-                pageSize: 10,                       //每页的记录行数（*）
+                pageSize: 20,                       //每页的记录行数（*）
                 pageList: [5, 10, 20, 50, 100, 200],   //可供选择的每页的行数（*）
                 search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
                 strictSearch: false,
@@ -72,25 +72,22 @@
                 cardView: false,                    //是否显示详细视图
                 detailView: false,                  //是否显示父子表
                 columns: [{
-                    checkbox: true
-                }, {
                     field: 'phoneId',
-                    title: 'phoneId',
+                    title: '设备ID',
                     halign: "center",
                     align: "center"
                 }, {
                     field: 'event',
-                    title: 'event',
+                    title: '日志类型',
                     halign: "center",
                     align: "center"
                 }, {
                     field: 'emsg',
-                    title: 'emsg',
+                    title: '日志描述',
                     halign: "center",
-                    align: "center"
                 }, {
                     field: 'createtime',
-                    title: '创建时间',
+                    title: '日志时间',
                     halign: "center",
                     align: "center"
                 }]

@@ -72,10 +72,13 @@
                 cardView: false,                    //是否显示详细视图
                 detailView: false,                  //是否显示父子表
                 columns: [{
-                    checkbox: true
+                    field: 'phoneId',
+                    title: '设备ID',
+                    halign: "center",
+                    align: "center"
                 }, {
                     field: 'osId',
-                    title: '系统类型',
+                    title: '设备型号',
                     halign: "center",
                     align: "center"
                 }, {
@@ -120,8 +123,8 @@
                     halign: "center",
                     align: "center"
                 }, {
-                    field: 'createtime',
-                    title: '创建时间',
+                    field: 'uptime',
+                    title: '更新时间',
                     halign: "center",
                     align: "center"
                 }]
