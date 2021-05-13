@@ -39,10 +39,11 @@ class Auth extends Controller
         //判断管理员是否登录
         if (!session('userid')) {
             $this->error("没有访问权限!");
+            return;
         }
 
         if(session('user_name')=='admin'){
-
+            return;
         }else {
             try {
                 $request = Request::instance();
@@ -56,5 +57,6 @@ class Auth extends Controller
                 $this->error($e);
             }
         }
+        return;
     }
 }

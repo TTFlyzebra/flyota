@@ -45,7 +45,7 @@ class Version
                 $ret = $phoneDB->update($phoneItem);
                 //TODO::
             } else {
-                $result['phoneId'] = $phoneDB->insert($phoneItem);
+                $result['phoneId'] = $phoneDB->insert($phoneItem,false, true);
                 //TODO::
             }
 
@@ -54,7 +54,7 @@ class Version
             $items = $db
                 ->where('status', 1)
                 ->where('osId', $sid)
-                ->where("oldver", ">=", $ver)
+                ->where("oldver", $ver)
                 ->where("version", ">=", $ver)
                 ->order('version desc')->select();
             if (empty($items)) {
@@ -62,7 +62,7 @@ class Version
                     ->where('status', 1)
                     ->where('osId', $sid)
                     ->where("oldver", "")
-//                    ->where("version", ">=", $ver)
+                    ->where("version", ">=", $ver)
                     ->order('version desc')->select();
             }
             //获取全量升级包

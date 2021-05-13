@@ -30,7 +30,7 @@ class Phone extends BaseRestful
 
     public function index()
     {
-        $this->handle('phone', 'phoneId desc');
+        $this->handle('phone', 'uptime desc');
     }
 
     public function test()
