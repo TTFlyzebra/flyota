@@ -54,6 +54,7 @@ class Version
             $items = $db
                 ->where('status', 1)
                 ->where('osId', $sid)
+                ->where("upType", "<>", 2)//测试版本不显示
                 ->where("oldver", $ver)
                 ->where("version", ">=", $ver)
                 ->order('version desc')->select();
@@ -61,6 +62,7 @@ class Version
                 $items = $db
                     ->where('status', 1)
                     ->where('osId', $sid)
+                    ->where("upType", "<>", 2)//测试版本不显示
                     ->where("oldver", "")
                     ->where("version", ">=", $ver)
                     ->order('version desc')->select();
