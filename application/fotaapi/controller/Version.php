@@ -27,7 +27,7 @@ class Version
             $phoneItem['osId'] = $sid;
             $phoneItem['imei'] = $imei;
             $phoneItem['uid'] = $uid;
-            $phoneItem['aid'] = $aid ;
+            $phoneItem['aid'] = $aid;
             $phoneItem['version'] = $ver;
             $phoneItem['userid'] = (!session('userid')) ? -1 : Session::get('userid');
             $phoneItem['ip'] = $request->ip();
@@ -40,12 +40,12 @@ class Version
                 ->find();
             if ($findItem) {
                 $result['phoneId'] = $findItem['phoneId'];
-                $phoneItem['count'] = $findItem['count']+1;
+                $phoneItem['count'] = $findItem['count'] + 1;
                 $phoneItem['phoneId'] = $findItem['phoneId'];
                 $ret = $phoneDB->update($phoneItem);
                 //TODO::
             } else {
-                $result['phoneId'] = $phoneDB->insert($phoneItem,false, true);
+                $result['phoneId'] = $phoneDB->insert($phoneItem, false, true);
                 //TODO::
             }
 
@@ -86,6 +86,70 @@ class Version
                     echo retJsonMsg("success!", 0, $result);
                 }
             }
+        } else {
+            echo retJsonMsg("Get params error!", -1, null);
+        }
+    }
+
+    public function all()
+    {
+        $request = Request::instance();
+        if ($request->has('sid', 'post')
+            && $request->has('ver', 'post')
+            && ($request->has('imei', 'post')
+                || $request->has('aid', 'post')
+                || $request->has('uid', 'post'))) {
+            $post = $request->post();
+            $sid = $post['sid'];
+            $ver = $post['ver'];
+            $imei = $post['imei'];
+            $uid = $post['uid'];
+            $aid = $post['aid'];
+
+            //更新手机状态
+            $phoneItem['osId'] = $sid;
+            $phoneItem['imei'] = $imei;
+            $phoneItem['uid'] = $uid;
+            $phoneItem['aid'] = $aid;
+            $phoneItem['version'] = $ver;
+            $phoneItem['userid'] = (!session('userid')) ? -1 : Session::get('userid');
+            $phoneItem['ip'] = $request->ip();
+            $phoneDB = Db::name("phone");
+            $findItem = $phoneDB
+                ->where("osId", $sid)
+                ->where("imei", $imei)
+                ->where("uid", $uid)
+                ->where("aid", $aid)
+                ->find();
+            if ($findItem) {
+                $phoneId = $findItem['phoneId'];
+                $phoneItem['count'] = $findItem['count'] + 1;
+                $phoneItem['phoneId'] = $findItem['phoneId'];
+                $ret = $phoneDB->update($phoneItem);
+            } else {
+                $phoneId = $phoneDB->insert($phoneItem, false, true);
+            }
+
+            $db = Db::name("otapackage");
+            //获取增量升级包
+            $items = $db
+                ->where('status', 1)
+                ->where('osId', $sid)
+                ->whereRaw('oldver="" or oldver="'.$ver.'"')
+                ->order('version desc')->select();
+
+            for ($si = 0; $si < sizeof($items); $si++) {
+                $result[$si]['version'] = $items[$si]['version'];
+                $result[$si]['md5sum'] = $items[$si]['md5sum'];
+                $result[$si]['downurl'] = input('server.REQUEST_SCHEME') . '://' . $_SERVER['HTTP_HOST'] . url($items[$si]['filepath']);
+                $result[$si]['upType'] = $items[$si]['upType'];
+                $result[$si]['otaType'] = $items[$si]['otaType'];
+                $result[$si]['oldver'] = $items[$si]['oldver'];
+                $result[$si]['filesize'] = $items[$si]['filesize'];
+                $result[$si]['releaseNote'] = $items[$si]['releaseNote'];
+                $result[$si]['phoneId'] = $phoneId;
+            }
+            echo retJsonMsg("success!", 0, $result);
         } else {
             echo retJsonMsg("Get params error!", -1, null);
         }
