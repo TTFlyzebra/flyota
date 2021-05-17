@@ -88,7 +88,7 @@ class Phonelog
                 }
 
                 if (empty($field)) {
-                    $db->field('status,userid,ip', true);
+                    $db->field('status,userid', true);
                 } else {
                     $db->field($field);
                 }
