@@ -42,6 +42,7 @@ class Phonelog
                 $phonelogItem['phoneId'] = $post['phoneId'];
                 $phonelogItem['event'] = $post['event'];
                 $phonelogItem['emsg'] = $post['emsg'];
+                $phonelogItem['phonetime'] = empty($post['phonetime'])?-500:$post['phonetime'];
                 $phonelogItem['userid'] = (!session('userid')) ? -1 : Session::get('userid');
                 $phonelogItem['ip'] = $request->ip();
                 $result = Db::name("phone_log")->insert($phonelogItem, false, true);
