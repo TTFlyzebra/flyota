@@ -50,24 +50,32 @@ class Version
             }
 
             $db = Db::name("otapackage");
+
+            if($sid=="CM3003"){
+                $verPrefix = substr($ver, 0, 8);
+            }else{
+                $verPrefix = substr($ver, 0, 2);
+            }
             //获取增量升级包
             $items = $db
                 ->where('status', 1)
                 ->where('osId', $sid)
-                ->where("upType", "<>", 2)//测试版本不显示
-                ->where("oldver", $ver)
-                ->where("version", ">", $ver)
+                ->where('upType', '<>', 2)//测试版本不显示
+                ->where('oldver', $ver)
+                ->where('version', '>', $ver)
+                ->whereRaw('version like "'.$verPrefix.'%"')
                 ->order('version desc')->select();
             if (empty($items)) {
+                //获取全量升级包
                 $items = $db
                     ->where('status', 1)
                     ->where('osId', $sid)
-                    ->where("upType", "<>", 2)//测试版本不显示
-                    ->where("oldver", "")
+                    ->where('upType', '<>', 2)//测试版本不显示
+                    ->where('oldver', "")
                     ->where("version", ">", $ver)
+                    ->whereRaw('version like "'.$verPrefix.'%"')
                     ->order('version desc')->select();
             }
-            //获取全量升级包
             if (empty($items)) {
                 $result['version'] = "Already latest version!";
                 $result['releaseNote'] = "";
@@ -133,11 +141,12 @@ class Version
             }
 
             $db = Db::name("otapackage");
-            //获取增量升级包
+
+            //获取所有全量包和增量包
             $items = $db
                 ->where('status', 1)
                 ->where('osId', $sid)
-                ->whereRaw('oldver="" or oldver="'.$ver.'"')
+                ->whereRaw('oldver="" or oldver="' . $ver . '"')
                 ->order('version desc')->select();
 
             for ($si = 0; $si < sizeof($items); $si++) {
