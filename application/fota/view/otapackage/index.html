@@ -107,7 +107,7 @@
                     halign: "center",
                     align: "center",
                     formatter: function (value) {
-                        return value===0 ? "手动升级": (value===1?"自动升级":"测试版本");
+                        return value==0 ? "手动升级": (value==1?"自动升级":"用于测试");
                     }
                 }, {
                     field: 'otaType',
@@ -115,7 +115,7 @@
                     halign: "center",
                     align: "center",
                     formatter: function (value) {
-                        return value===0 ? "完整包":"差分包";
+                        return value==0 ? "完整包":"差分包";
                     }
                 }, {
                     field: 'uptime',
