@@ -29,7 +29,7 @@ class Otapackage extends Auth
                 "filesize" => 0,
                 "md5sum" => "",
                 "oldver" => "",
-                "upType" => 0,
+                "upType" => 2,
                 "otaType" => 0,
                 "releaseNote" => "",
                 "remark" => "",

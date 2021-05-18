@@ -56,7 +56,7 @@ class Version
                 ->where('osId', $sid)
                 ->where("upType", "<>", 2)//测试版本不显示
                 ->where("oldver", $ver)
-                ->where("version", ">=", $ver)
+                ->where("version", ">", $ver)
                 ->order('version desc')->select();
             if (empty($items)) {
                 $items = $db
@@ -64,7 +64,7 @@ class Version
                     ->where('osId', $sid)
                     ->where("upType", "<>", 2)//测试版本不显示
                     ->where("oldver", "")
-                    ->where("version", ">=", $ver)
+                    ->where("version", ">", $ver)
                     ->order('version desc')->select();
             }
             //获取全量升级包
